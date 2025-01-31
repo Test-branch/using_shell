@@ -20,5 +20,5 @@ jobs:
 
       - name: Run branch protection script
         run: |
-          chmod +x ./scripts/branch_protection.sh
-          ./scripts/branch_protection.sh
+            chmod +x ./scripts/protect-branches.sh
+            ./scripts/protect-branches.sh
