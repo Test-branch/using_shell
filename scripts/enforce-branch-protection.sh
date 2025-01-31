@@ -1,17 +1,36 @@
 #!/bin/bash
  
 # Organization name
-ORG_NAME="Test-branch" # Replace with your organization name
+ORG_NAME="your-org-name" # Replace with your organization name
  
 # Fetch all repositories in the organization with pagination
 LIMIT=100 # Number of repositories to fetch per batch
-OFFSET=0  # Initial offset
+CURSOR="" # Initial cursor for pagination
  
 while true; do
-  echo "Fetching repositories for organization: $ORG_NAME (limit: $LIMIT, offset: $OFFSET)..."
+  echo "Fetching repositories for organization: $ORG_NAME (limit: $LIMIT)..."
  
-  # Fetch repositories in batches
-  repos=$(gh repo list "$ORG_NAME" --json nameWithOwner --jq '.[].nameWithOwner' --limit "$LIMIT")
+  # Fetch repositories in batches using pagination
+  response=$(gh api graphql -F org="$ORG_NAME" -F limit="$LIMIT" -F cursor="$CURSOR" -f query='
+    query($org: String!, $limit: Int!, $cursor: String) {
+      organization(login: $org) {
+        repositories(first: $limit, after: $cursor) {
+          nodes {
+            nameWithOwner
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
+        }
+      }
+    }
+  ')
+ 
+  # Extract repository names and cursor for the next page
+  repos=$(echo "$response" | jq -r '.data.organization.repositories.nodes[].nameWithOwner')
+  hasNextPage=$(echo "$response" | jq -r '.data.organization.repositories.pageInfo.hasNextPage')
+  CURSOR=$(echo "$response" | jq -r '.data.organization.repositories.pageInfo.endCursor')
  
   # Break the loop if no more repositories are returned
   if [ -z "$repos" ]; then
@@ -49,6 +68,8 @@ EOF
     echo "Branch protection enabled for $repo:$default_branch (requires 1 approval)"
   done
  
-  # Increment the offset for the next batch
-  OFFSET=$((OFFSET + LIMIT))
+  # Break the loop if there are no more pages
+  if [ "$hasNextPage" = "false" ]; then
+    break
+  fi
 done
