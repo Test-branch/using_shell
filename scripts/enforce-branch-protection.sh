@@ -1,7 +1,7 @@
 #!/bin/bash
  
 # Organization name
-ORG_NAME="your-org-name" # Replace with your organization name
+ORG_NAME="Test-branch" # Replace with your organization name
  
 # Fetch all repositories in the organization with pagination
 LIMIT=100 # Number of repositories to fetch per batch
