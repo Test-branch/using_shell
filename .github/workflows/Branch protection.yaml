@@ -1,0 +1,23 @@
+name: Enable Branch Protection
+
+on:
+  workflow_dispatch: # Allows manual triggering
+  schedule:
+    - cron: '0 6 * * *' # Runs daily at 12 AM CST
+
+jobs:
+  enable-branch-protection:
+    runs-on: uhg-runner
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up jq
+        run: sudo apt-get install jq
+
+      - name: Run branch protection script
+        run: ./enable_branch_protection.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          

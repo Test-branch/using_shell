@@ -1,0 +1,24 @@
+name: Branch Protection
+
+on:
+    workflow_dispatch: # Allows manual triggering
+    schedule:
+      - cron: '0 6 * * *' # Runs daily at 12 AM CST
+
+jobs:
+  protect-branches:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Run branch protection script
+        run: |
+          chmod +x ./scripts/branch_protection.sh
+          ./scripts/branch_protection.sh
