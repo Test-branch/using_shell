@@ -1,10 +1,13 @@
 #!/bin/bash
  
+# Organization name
+ORG_NAME="Test-branch" # Replace with your organization name
+ 
 # Fetch all repositories in the organization with pagination
 page=1
 while true; do
-  echo "Fetching page $page of repositories..."
-  repos=$(gh repo list --json nameWithOwner --jq '.[].nameWithOwner' --limit 100 --page "$page")
+  echo "Fetching page $page of repositories for organization: $ORG_NAME..."
+  repos=$(gh repo list "$ORG_NAME" --json nameWithOwner --jq '.[].nameWithOwner' --limit 100 --page "$page")
  
   # Break the loop if no more repositories are returned
   if [ -z "$repos" ]; then
@@ -25,9 +28,9 @@ default_branch=$(gh repo view "$repo" --json defaultBranchRef --jq '.defaultBran
   "required_status_checks": null,
   "enforce_admins": true,
   "required_pull_request_reviews": {
-  "required_approving_review_count": 1, # Require at least one approval
-  "dismiss_stale_reviews": false,
-  "require_code_owner_reviews": false
+    "required_approving_review_count": 1, # Require at least one approval
+    "dismiss_stale_reviews": false,
+    "require_code_owner_reviews": false
   },
   "restrictions": null,
   "allow_force_pushes": false,
