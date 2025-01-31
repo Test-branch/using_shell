@@ -1,26 +1,26 @@
-name: Branch Protection
-
+name: Enforce Branch Protection
+ 
 on:
-    workflow_dispatch: # Allows manual triggering
-    schedule:
-      - cron: '0 6 * * *' # Runs daily at 12 AM CST
-
+  schedule:
+    - cron: '0 0 * * *' # Runs daily at midnight
+  workflow_dispatch: # Allows manual triggering
+ 
 jobs:
-  protect-branches:
+  enforce-branch-protection:
     runs-on: ubuntu-latest
-      
+ 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
-      
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-      
-      - name: Run branch protection script
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+        uses: actions/checkout@v3
+ 
+      - name: Set up GitHub CLI
         run: |
-                chmod +x ./scripts/protect-branches.sh
-                ./scripts/protect-branches.sh
+          sudo apt-get install -y gh
+          gh auth login --with-token <<< "${{ secrets.PAT_TOKEN }}"
+ 
+      - name: Make script executable
+        run: chmod +x ./scripts/enforce-branch-protection.sh
+ 
+      - name: Run branch protection script
+        run: |
+           ./scripts/enforce-branch-protection.sh
