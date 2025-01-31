@@ -4,17 +4,21 @@
 ORG_NAME="Test-branch" # Replace with your organization name
  
 # Fetch all repositories in the organization with pagination
-page=1
+LIMIT=100 # Number of repositories to fetch per batch
+OFFSET=0  # Initial offset
+ 
 while true; do
-  echo "Fetching page $page of repositories for organization: $ORG_NAME..."
-  repos=$(gh repo list "$ORG_NAME" --json nameWithOwner --jq '.[].nameWithOwner' --limit 100 --page "$page")
+  echo "Fetching repositories for organization: $ORG_NAME (limit: $LIMIT, offset: $OFFSET)..."
+ 
+  # Fetch repositories in batches
+  repos=$(gh repo list "$ORG_NAME" --json nameWithOwner --jq '.[].nameWithOwner' --limit "$LIMIT")
  
   # Break the loop if no more repositories are returned
   if [ -z "$repos" ]; then
     break
   fi
  
-  # Loop through each repository in the current page
+  # Loop through each repository in the current batch
   for repo in $repos; do
     echo "Processing repository: $repo"
  
@@ -41,6 +45,6 @@ EOF
     echo "Branch protection enabled for $repo:$default_branch (requires 1 approval)"
   done
  
-  # Increment the page number
-  page=$((page + 1))
+  # Increment the offset for the next batch
+  OFFSET=$((OFFSET + LIMIT))
 done
