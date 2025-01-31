@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # GitHub API token
-GITHUB_TOKEN=${{ secrets.PAT_TOKEN }}
+GITHUB_TOKEN=$PAT_TOKEN
 ORG_NAME="Test-branch"
 
 # Function to protect branches
