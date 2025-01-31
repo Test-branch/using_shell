@@ -30,11 +30,15 @@ default_branch=$(gh repo view "$repo" --json defaultBranchRef --jq '.defaultBran
       --input - <<EOF
 {
   "required_status_checks": null,
-  "enforce_admins": true,
+  "enforce_admins": null,
   "required_pull_request_reviews": {
-    "required_approving_review_count": 1, # Require at least one approval
+    "required_approving_review_count": 1,
     "dismiss_stale_reviews": false,
-    "require_code_owner_reviews": false
+    "require_code_owner_reviews": false,
+    "bypass_pull_request_allowances": {
+      "users": [],
+      "teams": []
+    }
   },
   "restrictions": null,
   "allow_force_pushes": false,
